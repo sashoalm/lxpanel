@@ -543,11 +543,7 @@ static gboolean task_button_window_do_release_event(GtkWidget *tb, TaskDetails *
     else if (event->button == 2)
     {
         /* Middle button.  Toggle the shaded state of the window. */
-        Xclimsgx(GDK_SCREEN_XSCREEN(gtk_widget_get_screen(tb)),
-                task->win, a_NET_WM_STATE,
-                a_NET_WM_STATE_TOGGLE,
-                a_NET_WM_STATE_SHADED,
-                0, 0, 0);
+        Xclimsgwm(task->win, a_WM_PROTOCOLS, a_WM_DELETE_WINDOW);
     }
     return TRUE;
 }
