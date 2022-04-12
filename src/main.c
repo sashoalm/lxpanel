@@ -145,6 +145,7 @@ static void process_client_msg ( XClientMessageEvent* ev )
                 GList *plugins, *pl;
                 const LXPanelPluginInit *init;
                 GtkWidget *plugin = NULL;
+                int plugin_index = 0;
 
                 *command++ = '\0';
                 /* find the panel by monitor and edge */
@@ -172,6 +173,7 @@ static void process_client_msg ( XClientMessageEvent* ev )
                         plugin = pl->data;
                         break;
                     }
+                    plugin_index++;
                 }
                 g_list_free(plugins);
                 /* test for built-in commands ADD and DEL */
@@ -193,6 +195,21 @@ static void process_client_msg ( XClientMessageEvent* ev )
                 {
                     if (plugin != NULL)
                         lxpanel_remove_plugin(p, plugin);
+                }
+                else if (strcmp(command, "RELOAD") == 0)
+                {
+                    if (plugin != NULL) {
+                        lxpanel_remove_plugin(p, plugin);
+
+                        config_setting_t *cfg;
+
+                        cfg = config_group_add_subgroup(config_root_setting(p->priv->config),
+                                                        "Plugin");
+                        config_group_set_string(cfg, "type", plugin_type);
+                        plugin = lxpanel_add_plugin(p, plugin_type, cfg, plugin_index);
+                        if (plugin == NULL) /* failed to create */
+                            config_setting_destroy(cfg);
+                    }
                 }
                 /* send the command */
                 else if (plugin && init->control)
