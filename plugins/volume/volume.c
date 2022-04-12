@@ -104,7 +104,9 @@ static void update_icon (GtkWidget *p, volume_t *vol)
 			gtk_widget_destroy(curr_image);
 			curr_image = NULL;
 		}
-		image = gtk_image_new_from_pixbuf(icon);
+		char * volume_str = g_strdup_printf("%d", curr_volume);
+		image = gtk_label_new(volume_str);
+		g_free(volume_str);
 		gtk_container_add(GTK_CONTAINER(p), image);
 
 		curr_image = image;

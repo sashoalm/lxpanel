@@ -607,7 +607,9 @@ static void volumealsa_update_current_icon(VolumeALSAPlugin * vol, gboolean mute
     volumealsa_lookup_current_icon(vol, mute, level);
 
     /* Change icon, fallback to default icon if theme doesn't exsit */
-    lxpanel_image_change_icon(vol->tray_icon, vol->icon_panel, vol->icon_fallback);
+    gchar * text = g_strdup_printf("%3d%s", level, "%");
+    gtk_label_set_text(vol->tray_icon, text);
+    g_free(text);
 
     /* Display current level in tooltip. */
     char * tooltip = g_strdup_printf("%s %d", _("Volume control"), level);
@@ -973,8 +975,7 @@ static GtkWidget *volumealsa_constructor(LXPanel *panel, config_setting_t *setti
     gtk_widget_set_tooltip_text(p, _("Volume control"));
 
     /* Allocate icon as a child of top level. */
-    vol->tray_icon = lxpanel_image_new_for_icon(panel, "audio-volume-muted-panel",
-                                                -1, ICONS_MUTE);
+    vol->tray_icon = gtk_label_new(_("33"));
     gtk_container_add(GTK_CONTAINER(p), vol->tray_icon);
 
     /* Initialize window to appear when icon clicked. */
