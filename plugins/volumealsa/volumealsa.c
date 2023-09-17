@@ -603,13 +603,20 @@ static void volumealsa_lookup_current_icon(VolumeALSAPlugin * vol, gboolean mute
 
 static void volumealsa_update_current_icon(VolumeALSAPlugin * vol, gboolean mute, int level)
 {
-    /* Find suitable icon */
-    volumealsa_lookup_current_icon(vol, mute, level);
-
+    static gboolean lastMute = 0;
+    
     /* Change icon, fallback to default icon if theme doesn't exsit */
     gchar * text = g_strdup_printf("%3d%s", level, "%");
     gtk_label_set_text(vol->tray_icon, text);
     g_free(text);
+    
+    if (mute != lastMute)
+    {
+        GdkColor color;
+        gdk_color_parse (mute ? "gray" : "black", &color);
+        gtk_widget_modify_fg ( GTK_WIDGET(vol->tray_icon), GTK_STATE_NORMAL, &color);
+        lastMute = mute;
+    }
 
     /* Display current level in tooltip. */
     char * tooltip = g_strdup_printf("%s %d", _("Volume control"), level);
